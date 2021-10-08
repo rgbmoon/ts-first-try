@@ -29,6 +29,7 @@ input {
   font-size: inherit;
   padding: 3px;
   margin: 0 5px;
+  text-align: center;
 }
 button {
   font-size: inherit;
