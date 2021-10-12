@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import './App.css';
 
+type InputProps = {
+  onChange: any;
+  value: string;
+  name: string;
+};
 
-/*
-3) Посчитать уравнение и вывести X
-*/
-
-const Input = (props: AppProps) => {
+const Input = (props: InputProps) => {
   return(
     <input 
       type="text" 
@@ -20,31 +21,27 @@ const Input = (props: AppProps) => {
 
 const Calculator = () => {
 
+  //Прописываем состояние дочерним элементам через хуки.
   const [state, setState] = useState({
     a: '',
     b: '',
     c: '',
   });
 
-  //Отслеживаем ввод
+  //Отслеживаем ввод и проверяем ввод на валидность
   const inputHandler = (event: any) => {
-    const { name, value } = event.target;
-    setState(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-    } 
+    if (!isNaN(Number(event.target.value))) {
+      setState(prevState => ({
+        ...prevState,
+        [event.target.name]: event.target.value
+      }));
+    }
+  } 
 
 
-  // const prepearingData = (input: string) => {
+  const calculate = (inputValues: object) => {
 
-  //   const num: number = Number(input); // Перевод данных инпута в число
-
-  //   if (isNaN(num)) { // Проверка и отмена ввода невалидных символов
-  //       setState('');
-  //   }
-  //   return;
-  // }
+  }
   
 
   return (
@@ -76,8 +73,7 @@ const Calculator = () => {
   );
 }
 
-const App: React.FunctionComponent = () => {
-  
+const App = () => {
   return (
     <div className="App">
       <Calculator />
@@ -87,11 +83,3 @@ const App: React.FunctionComponent = () => {
 
 export default App;
 
-
-
-
-type AppProps = {
-  onChange: any;
-  value: string;
-  name: string;
-};
