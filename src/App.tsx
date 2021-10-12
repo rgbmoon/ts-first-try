@@ -2,9 +2,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import './App.css';
 
 /*
-1) Сделать подсчет X
+1) Странно работает со значениями a=9 b=5,6,7 c=1Б после смены b и нажатия на кнопку сначала показывает один результат, а после повторного нажатия другой, надо понять почему так 
 2) Разобраться и заюзать хук useMemo
-3) Допилить калькулятор
+3) Допилить калькулятор. Пока что нельзя вводить отрицательные коэффициенты
 */
 
 type InputProps = {
@@ -34,6 +34,7 @@ const Calculator = () => {
     c: '',
     x_1: 0,
     x_2: 0,
+    D: 0,
   });
 
   //Отслеживаем ввод и проверяем ввод на валидность
@@ -54,24 +55,28 @@ const Calculator = () => {
     const c = Number(state.c);
 
     if (a === 0) {
-      return false; // Проработать этот случай, чтобы не было ощущения зависания приложения
-    }
-    const D = b * b - 4 * a * c;
-    console.log('D =', D);
-    if (D < 0) { 
-      return false; 
-    } 
-    if (D === 0) { 
       setState(prevState => ({
         ...prevState,
-        x_1: (-b + Math.sqrt(D)) / (2 * a)
+        D: -1
+      }));
+      return;
+    }
+    setState(prevState => ({
+      ...prevState,
+      D: (b * b - 4 * a * c),
+    }));
+    console.log('D =', state.D);
+    if (state.D === 0) { 
+      setState(prevState => ({
+        ...prevState,
+        x_1: (-b + Math.sqrt(state.D)) / (2 * a)
       }));
      }
-    else if (D > 0) {
+    else if (state.D > 0) {
       setState(prevState => ({
         ...prevState,
-        x_1: ((-b + Math.sqrt(D)) / (2 * a)),
-        x_2: ((-b - Math.sqrt(D)) / (2 * a)),
+        x_1: ((-b + Math.sqrt(state.D)) / (2 * a)),
+        x_2: ((-b - Math.sqrt(state.D)) / (2 * a)),
       }));
     }
   }
@@ -98,8 +103,16 @@ const Calculator = () => {
         </button>
       </div>
       <div className="row">
-        <div>X1 = {state.x_1}</div>
-        <div>X2 = {state.x_2}</div>
+        {state.D < 0 &&
+          <div>D {'<'} 0, корней нет</div>
+        }
+        {state.D === 0 &&
+          <div>X = {state.x_1.toFixed(2)}</div>
+        }
+        {state.D > 0 &&
+          <div>X1 = {state.x_1.toFixed(2)}<br/>
+          X2 = {state.x_2.toFixed(2)}</div>
+        }
       </div>
     </div>
   );
