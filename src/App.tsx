@@ -53,6 +53,7 @@ const Calculator = () => {
   //Считаем корни уравнения и передаем их в свойства объекта state
   const calculate = (state: calcProps) => {
 
+    console.log('Уравнение посчитано!');
     const a = Number(state.a);
     const b = Number(state.b);
     const c = Number(state.c);
@@ -73,7 +74,8 @@ const Calculator = () => {
     )}
   }
 
-  const calс = calculate(state);
+  // Вот тут то мы и прикручиваем useMemo, но пока что оно как будто не работает, надо проверить
+  const calс = useMemo(() => calculate(state), [state.a, state.b, state.c]);
 
   return (
     <div className="Calculator">
