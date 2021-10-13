@@ -2,9 +2,7 @@ import React, { useState, useMemo } from 'react';
 import './App.css';
 
 /*
-1) Странно работает со значениями a=9 b=5,6,7 c=1. После смены b и нажатия на кнопку сначала показывает один результат, а после повторного нажатия другой, надо понять почему так 
 2) Разобраться и заюзать хук useMemo
-3) Сделать вывод ответа без кнопки, сразу после ввода аргументов
 */
 
 type InputProps = {
@@ -27,14 +25,11 @@ const Input = (props: InputProps) => {
 
 const Calculator = () => {
 
-  //Прописываем состояние дочерним элементам через хуки.
+  //Храним тут состояние инпутов
   const [state, setState] = useState({
     a: '',
     b: '',
     c: '',
-    x_1: 0,
-    x_2: 0,
-    d: 0,
   });
 
   //Отслеживаем ввод и проверяем ввод на валидность
@@ -47,42 +42,38 @@ const Calculator = () => {
     }
   } 
 
+
+  // С ТС я пока что так и не разобрался, поэтому пишу такие вот говноконструкции лишь бы избежать ошибок при сборке
+  type calcProps = {
+    a: string;
+    b: string;
+    c: string;
+  }
+
   //Считаем корни уравнения и передаем их в свойства объекта state
-  const calculate = () => {
+  const calculate = (state: calcProps) => {
 
     const a = Number(state.a);
     const b = Number(state.b);
     const c = Number(state.c);
+    const d = (b * b - 4 * a * c);
 
-    if (a === 0) {
-      setState(prevState => ({
-        ...prevState,
-        D: -1
-      }));
-      return;
+    if (a === 0 || d < 0) {
+      return 'корней нема';
     }
-    setState(prevState => ({
-      ...prevState,
-      D: (b * b - 4 * a * c),
-    }));
-    console.log('D =', state.d);
-    if (state.d === 0) { 
-      setState(prevState => ({
-        ...prevState,
-        x_1: (-b + Math.sqrt(state.d)) / (2 * a)
-      }));
-     }
-    else if (state.d > 0) {
-      setState(prevState => ({
-        ...prevState,
-        x_1: ((-b + Math.sqrt(state.d)) / (2 * a)),
-        x_2: ((-b - Math.sqrt(state.d)) / (2 * a)),
-      }));
+    
+    if (d === 0) { 
+      return 'X равен ' + ((-b + Math.sqrt(d)) / (2 * a)).toFixed(2)
     }
-    console.log('a =', a,'b =', b,'c =', c,)
+
+    if (d > 0) {
+      return (
+      'X1 = ' + ((-b + Math.sqrt(d)) / (2 * a)).toFixed(2) + '; ' +
+      'X2 = ' + ((-b - Math.sqrt(d)) / (2 * a)).toFixed(2)
+    )}
   }
 
-  useMemo(() => calculate(), [state.a, state.b, state.c]);
+  const calс = calculate(state);
 
   return (
     <div className="Calculator">
@@ -100,22 +91,8 @@ const Calculator = () => {
           value={state.c} 
           onChange={inputHandler}/> = 0
       </div>
-      {/* <div className="row">
-        <button onClick={() => calculate()}>
-          Посчитать
-        </button>
-      </div> */}
       <div className="row">
-        {state.d < 0 &&
-          <div>D {'<'} 0, корней нет</div>
-        }
-        {state.d === 0 &&
-          <div>X = {state.x_1.toFixed(2)}</div>
-        }
-        {state.d > 0 &&
-          <div>X1 = {state.x_1.toFixed(2)}<br/>
-          X2 = {state.x_2.toFixed(2)}</div>
-        }
+          {calс}
       </div>
     </div>
   );
